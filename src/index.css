@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+*{
+  font-family: "Playfair", serif;
+}
+
+header{
+  background-image: url("https://images.pexels.com/photos/1034008/pexels-photo-1034008.jpeg");
+  height: 500px;
+  width: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#main{
+  height: 500px;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.06);
+}
