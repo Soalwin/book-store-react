@@ -9,6 +9,8 @@ import PagenotFound from './pages/PagenotFound'
 import Preloader from './components/Preloader'
 import Careers from './pages/Careers'
 import Contact from './pages/Contact'
+import AllBooks from './users/pages/AllBooks'
+import Profile from './users/pages/Profile'
 
 
 function App() {
@@ -28,9 +30,12 @@ function App() {
    <Routes>
     <Route path='/' element={loading ? <Home/> : <Preloader/> }/>
     <Route path='/login' element={<Auth/>}/>
-    <Route path='/register' element={<Auth/>}/>
+    <Route path='/register' element={<Auth register/>}/>
     <Route path='/career' element={<Careers/>}/>
     <Route path='/contact' element={<Contact/>}/>
+    <Route path='/allbooks' element={<AllBooks/>}/>
+      <Route path='/profile' element={<Profile/>}/>
+
 
     <Route path='*' element={<PagenotFound/>}/>
    </Routes>

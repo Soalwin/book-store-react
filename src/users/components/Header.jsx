@@ -21,9 +21,9 @@ const Header = () => {
           <FontAwesomeIcon icon={faInstagram} />
           <FontAwesomeIcon icon={faTwitter} />
           <FontAwesomeIcon icon={faFacebook} />
-          <Link to={'/login'}>
+          {/* <Link to={'/login'}>
             <button className='border border-black rounded px-3 py-2 '><FontAwesomeIcon icon={faUser} />login</button>
-          </Link>  
+          </Link> */}
           {/* // dropdown */}
           <div className="relative inline-block text-left">
             <div>
@@ -78,7 +78,7 @@ const Header = () => {
       <nav className='p-3 w-full bg-gray-900 text-white md:flex justify-center items-center'>
         <div className='flex justify-evenly px-3 md:hidden '>
           <span className='text-2xl ' onClick={() => setStatus(!status)}><FontAwesomeIcon icon={faBars} /></span>
-          <Link to={'/login'}><button className='border border-black rounded px-3 py-2 '><FontAwesomeIcon icon={faUser} />login</button></Link>
+          {/* <Link to={'/login'}><button className='border border-black rounded px-3 py-2 '><FontAwesomeIcon icon={faUser} />login</button></Link> */}
           {/* // dropdown */}
           <div className="relative inline-block text-left">
             <div>

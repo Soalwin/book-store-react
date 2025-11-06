@@ -18,3 +18,16 @@ header{
   width: 100%;
   background-color: rgba(0, 0, 0, 0.06);
 }
+
+#loginPage{
+  background-image: url("https://wallpapers.com/images/hd/library-filled-with-books-vyy56lqa9wji657j.jpg");
+  height: 100vh;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+#wolf{
+  background-color: rgba(194, 123, 65, 0.662);
+}
