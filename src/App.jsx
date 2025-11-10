@@ -11,35 +11,44 @@ import Careers from './pages/Careers'
 import Contact from './pages/Contact'
 import AllBooks from './users/pages/AllBooks'
 import Profile from './users/pages/Profile'
+import AdminHome from './admin/pages/AdminHome'
+import AdminBooks from './admin/pages/AdminBooks'
+import AdminSettings from './admin/pages/AdminSettings'
 
 
 function App() {
-    const[loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  useEffect(()=>{
-    setTimeout(()=>{
+  useEffect(() => {
+    setTimeout(() => {
       setLoading(true)
-    },4000)
-  },[])
+    }, 4000)
+  }, [])
 
 
 
   return (
     <>
-   
-   <Routes>
-    <Route path='/' element={loading ? <Home/> : <Preloader/> }/>
-    <Route path='/login' element={<Auth/>}/>
-    <Route path='/register' element={<Auth register/>}/>
-    <Route path='/career' element={<Careers/>}/>
-    <Route path='/contact' element={<Contact/>}/>
-    <Route path='/allbooks' element={<AllBooks/>}/>
-      <Route path='/profile' element={<Profile/>}/>
+
+      <Routes>
+        <Route path='/' element={loading ? <Home /> : <Preloader />} />
+        <Route path='/login' element={<Auth />} />
+        <Route path='/register' element={<Auth register />} />
+        {/* <Route path='/career' element={<Careers/>}/> */}
+        <Route path='/contact' element={<Contact />} />
+        <Route path='/allbooks' element={<AllBooks />} />
+        <Route path='/profile' element={<Profile />} />
+        <Route path='/admin-home' element={loading ? <AdminHome /> : <Preloader />} />
+        <Route path='/admin-books' element={<AdminBooks />} />
+        <Route path='/admin-settings' element={<AdminSettings />} />
 
 
-    <Route path='*' element={<PagenotFound/>}/>
-   </Routes>
-   
+
+
+
+        <Route path='*' element={<PagenotFound />} />
+      </Routes>
+
     </>
   )
 }

@@ -134,7 +134,7 @@ const Header = () => {
         <ul className={`flex flex-col gap-4 md:flex-row md:gap-4 md:bg-transparent left-0 p-4 bg-gray-800 ${status ? "block" : "hidden"} md:flex`} >
           <Link to={'/'}><li>home</li></Link>
           <Link ><li>books</li></Link>
-          <Link to={'/career'}><li>careers</li></Link>
+          {/* <Link to={'/career'}><li>careers</li></Link> */}
           <Link to={'/contact'}><li>contact</li></Link>
         </ul>
       </nav>
