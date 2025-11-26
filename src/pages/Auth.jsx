@@ -1,9 +1,87 @@
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify';
+import { commonAPI } from '../services/commonAPI';
+import { addUserAPI, loginAPI } from '../services/allAPI';
 
 const Auth = ({ register }) => {
+  const [userDetails,setUserDetails] = useState({
+
+    username : "",
+    email:"",
+    password:""
+  })
+
+  const navigate = useNavigate()
+  console.log(userDetails);
+
+  const handleRegister = async()=>{
+    const {username,email,password} = userDetails
+
+    if(!username || !email || !password){
+      toast.info("please fill the form completely...")
+    }else{
+      const result = await addUserAPI(userDetails)
+      console.log(result);
+      if(result.status == 200){
+        toast.success("Registration Successfull")
+        setUserDetails({
+          username:"",
+          email:"",
+          password:""
+        })
+        navigate("/login")
+      }else if(result.status == 400){
+        toast.warning(result.response.data)
+         setUserDetails({
+          username:"",
+          email:"",
+          password:""
+        })
+      }else{
+        toast.error("something went wrong ")
+         setUserDetails({
+          username:"",
+          email:"",
+          password:""
+        })
+      }
+    }
+  }
+
+  
+  const handleLogin =async()=>{
+    const {email,password}=userDetails
+    if(!email || !password){
+      toast.info("please fill the form")
+
+    }
+    else{
+
+      const result = await loginAPI({email,password})
+      console.log(result);
+
+      if(result.status==200){
+        toast.success("Login sucessfull...")
+        sessionStorage.setItem("existingUser",JSON.stringify(result.data.existingUser))
+        sessionStorage.setItem("token",result.data.token)
+
+
+        setTimeout(()=>{
+          if(result.data.existingUser.email=="bookStoreAdmin@gmail.com"){
+            navigate('/admin-home')
+          }
+          else{
+            navigate('/')
+          }
+        },3000)
+
+      }
+      
+    }
+  }
   return (
     <div id='loginPage'>
 
@@ -23,15 +101,15 @@ const Auth = ({ register }) => {
             }
 
             {register && <div className='mb-3 w-full mt-4'>
-              <input type="text" placeholder='User Name' className='p-2 rounded bg-white w-full' />
+              <input value={userDetails.username} onChange={(e)=>setUserDetails({...userDetails,username:e.target.value})} type="text" placeholder='User Name' className='p-2 rounded bg-white w-full' />
             </div>}
 
             <div className='mb-3 w-full mt-4'>
-              <input type="text" placeholder='email id' className='p-2 rounded bg-white w-full' />
+              <input type="text" value={userDetails.email} onChange={(e)=>setUserDetails({...userDetails,email:e.target.value})}  placeholder='email id' className='p-2 rounded bg-white w-full' />
             </div>
 
             <div className='mb-3 w-full mt-4'>
-              <input type="text" placeholder='password' className='p-2 rounded bg-white w-full' />
+              <input type="text" value={userDetails.password} onChange={(e)=>setUserDetails({...userDetails,password:e.target.value})} placeholder='password' className='p-2 rounded bg-white w-full' />
             </div>
 
             <div className='mb-5 w-full flex justify-between'>
@@ -40,8 +118,8 @@ const Auth = ({ register }) => {
             </div>
 
             <div className='mb-2 w-full'>
-              {!register ? <button className='bg-green-700 text-white w-full p-3 rounded'>Login</button> :
-                <button className='bg-green-700 text-white w-full p-3 rounded'>Register</button>}
+              {!register ? <button type='button' onClick={()=>handleLogin()} className='bg-green-700 text-white w-full p-3 rounded'>Login</button> :
+                <button type='button' onClick={()=>handleRegister()} className='bg-green-700 text-white w-full p-3 rounded'>Register</button>}
             </div>
 
             <p className='text-white'>..............OR..............</p>
@@ -65,6 +143,7 @@ const Auth = ({ register }) => {
 
         </div>
       </div>
+      <ToastContainer />
     </div>
   )
 }
