@@ -4,83 +4,98 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
 import { commonAPI } from '../services/commonAPI';
-import { addUserAPI, loginAPI } from '../services/allAPI';
+import { addUserAPI, googleLoginAPI, loginAPI } from '../services/allAPI';
+import { GoogleLogin } from '@react-oauth/google';
+import {jwtDecode} from 'jwt-decode'
 
 const Auth = ({ register }) => {
-  const [userDetails,setUserDetails] = useState({
+  const [userDetails, setUserDetails] = useState({
 
-    username : "",
-    email:"",
-    password:""
+    username: "",
+    email: "",
+    password: ""
   })
 
   const navigate = useNavigate()
   console.log(userDetails);
 
-  const handleRegister = async()=>{
-    const {username,email,password} = userDetails
+  const handleRegister = async () => {
+    const { username, email, password } = userDetails
 
-    if(!username || !email || !password){
+    if (!username || !email || !password) {
       toast.info("please fill the form completely...")
-    }else{
+    } else {
       const result = await addUserAPI(userDetails)
       console.log(result);
-      if(result.status == 200){
+      if (result.status == 200) {
         toast.success("Registration Successfull")
         setUserDetails({
-          username:"",
-          email:"",
-          password:""
+          username: "",
+          email: "",
+          password: ""
         })
         navigate("/login")
-      }else if(result.status == 400){
+      } else if (result.status == 400) {
         toast.warning(result.response.data)
-         setUserDetails({
-          username:"",
-          email:"",
-          password:""
+        setUserDetails({
+          username: "",
+          email: "",
+          password: ""
         })
-      }else{
+      } else {
         toast.error("something went wrong ")
-         setUserDetails({
-          username:"",
-          email:"",
-          password:""
+        setUserDetails({
+          username: "",
+          email: "",
+          password: ""
         })
       }
     }
   }
 
-  
-  const handleLogin =async()=>{
-    const {email,password}=userDetails
-    if(!email || !password){
+
+  const handleLogin = async () => {
+    const { email, password } = userDetails
+    if (!email || !password) {
       toast.info("please fill the form")
 
     }
-    else{
+    else {
 
-      const result = await loginAPI({email,password})
+      const result = await loginAPI({ email, password })
       console.log(result);
 
-      if(result.status==200){
+      if (result.status == 200) {
         toast.success("Login sucessfull...")
-        sessionStorage.setItem("existingUser",JSON.stringify(result.data.existingUser))
-        sessionStorage.setItem("token",result.data.token)
+        sessionStorage.setItem("existingUser", JSON.stringify(result.data.existingUser))
+        sessionStorage.setItem("token", result.data.token)
 
 
-        setTimeout(()=>{
-          if(result.data.existingUser.email=="bookStoreAdmin@gmail.com"){
+        setTimeout(() => {
+          if (result.data.existingUser.email == "bookStoreAdmin@gmail.com") {
             navigate('/admin-home')
           }
-          else{
+          else {
             navigate('/')
           }
-        },3000)
+        }, 3000)
 
       }
-      
+
     }
+  }
+
+  const handleGoogleLogin = async(credentialResponse)=>{
+    const details = jwtDecode(credentialResponse.credential)
+      console.log(details)
+    
+    const result = await googleLoginAPI({username:details.name, email:details.email, password:"password", photo:details.picture})
+    console.log(result);
+    
+
+
+
+
   }
   return (
     <div id='loginPage'>
@@ -101,15 +116,15 @@ const Auth = ({ register }) => {
             }
 
             {register && <div className='mb-3 w-full mt-4'>
-              <input value={userDetails.username} onChange={(e)=>setUserDetails({...userDetails,username:e.target.value})} type="text" placeholder='User Name' className='p-2 rounded bg-white w-full' />
+              <input value={userDetails.username} onChange={(e) => setUserDetails({ ...userDetails, username: e.target.value })} type="text" placeholder='User Name' className='p-2 rounded bg-white w-full' />
             </div>}
 
             <div className='mb-3 w-full mt-4'>
-              <input type="text" value={userDetails.email} onChange={(e)=>setUserDetails({...userDetails,email:e.target.value})}  placeholder='email id' className='p-2 rounded bg-white w-full' />
+              <input type="text" value={userDetails.email} onChange={(e) => setUserDetails({ ...userDetails, email: e.target.value })} placeholder='email id' className='p-2 rounded bg-white w-full' />
             </div>
 
             <div className='mb-3 w-full mt-4'>
-              <input type="text" value={userDetails.password} onChange={(e)=>setUserDetails({...userDetails,password:e.target.value})} placeholder='password' className='p-2 rounded bg-white w-full' />
+              <input type="text" value={userDetails.password} onChange={(e) => setUserDetails({ ...userDetails, password: e.target.value })} placeholder='password' className='p-2 rounded bg-white w-full' />
             </div>
 
             <div className='mb-5 w-full flex justify-between'>
@@ -118,13 +133,26 @@ const Auth = ({ register }) => {
             </div>
 
             <div className='mb-2 w-full'>
-              {!register ? <button type='button' onClick={()=>handleLogin()} className='bg-green-700 text-white w-full p-3 rounded'>Login</button> :
-                <button type='button' onClick={()=>handleRegister()} className='bg-green-700 text-white w-full p-3 rounded'>Register</button>}
+              {!register ? <button type='button' onClick={() => handleLogin()} className='bg-green-700 text-white w-full p-3 rounded'>Login</button> :
+                <button type='button' onClick={() => handleRegister()} className='bg-green-700 text-white w-full p-3 rounded'>Register</button>}
             </div>
 
             <p className='text-white'>..............OR..............</p>
             <p className='mb-5 mt-3 w-full'>
-              {!register && <button className='bg-white text-black w-full p-3 rounded'>Sign in with Google</button>}
+              {!register &&
+                // <button className='bg-white text-black w-full p-3 rounded'>Sign in with Google</button>
+                <div className='flex justify-center'>
+                  <GoogleLogin
+                    onSuccess={credentialResponse => {
+                      console.log(credentialResponse);
+                      handleGoogleLogin(credentialResponse)
+                    }}
+                    onError={() => {
+                      console.log('Login Failed');
+                    }}
+                  />
+                </div>
+              }
             </p>
 
             {!register ? (
