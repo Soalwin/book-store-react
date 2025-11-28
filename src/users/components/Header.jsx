@@ -2,12 +2,24 @@ import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg
 import { width } from '@fortawesome/free-brands-svg-icons/fa11ty'
 import { faAddressCard, faBars, faPowerOff, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const Header = () => {
   const [status, setStatus] = useState(false)
   const [dropDownStatus, setDropDownStatus] = useState(false)
+  const [token,setToken] = useState("")
+
+  useEffect(()=>{
+    if(sessionStorage.getItem("token")){
+      const token = sessionStorage.getItem("token")
+      setToken(token)
+    }
+  },[])
+
+  console.log(token)
+
+
   return (
     <>
       <div className='md:grid grid-cols-3'>
@@ -21,10 +33,13 @@ const Header = () => {
           <FontAwesomeIcon icon={faInstagram} />
           <FontAwesomeIcon icon={faTwitter} />
           <FontAwesomeIcon icon={faFacebook} />
-          <Link to={'/login'}>
+         {!token ?
+         
+         <Link to={'/login'}>
             <button className='border border-black rounded px-3 py-2 '><FontAwesomeIcon icon={faUser} />login</button>
           </Link>
-          {/* // dropdown */}
+          :
+          // dropdown 
           <div className="relative inline-block text-left">
             <div>
               <button
@@ -72,14 +87,17 @@ const Header = () => {
               </div>
             </div>}
           </div>
+}
         </div>
       </div>
 
       <nav className='p-3 w-full bg-gray-900 text-white md:flex justify-center items-center'>
         <div className='flex justify-evenly px-3 md:hidden '>
           <span className='text-2xl ' onClick={() => setStatus(!status)}><FontAwesomeIcon icon={faBars} /></span>
+         {!token ?
           <Link to={'/login'}><button className='border border-black rounded px-3 py-2 '><FontAwesomeIcon icon={faUser} />login</button></Link>
-          {/* // dropdown */}
+          :
+          //dropdown 
           <div className="relative inline-block text-left">
             <div>
               <button
@@ -126,7 +144,7 @@ const Header = () => {
                 </button>
               </div>
             </div>}
-          </div>
+          </div>}
 
         </div>
 

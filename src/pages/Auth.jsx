@@ -92,6 +92,22 @@ const Auth = ({ register }) => {
     const result = await googleLoginAPI({username:details.name, email:details.email, password:"password", photo:details.picture})
     console.log(result);
     
+    if(result.status == 200){
+      toast.success("login successful")
+      sessionStorage.setItem("existingUser",JSON.stringify(result.data.existingUser))
+      sessionStorage.setItem("token",result.data.token )
+
+      setTimeout(()=>{
+        if(result.data.existingUser.email == "bookAdmin@gmail.com"){
+          navigate("/admin-home")
+        }else{
+          navigate("/")
+        }
+      },2500)
+    }
+    else{
+      toast.error("something went wrong")
+    }
 
 
 
