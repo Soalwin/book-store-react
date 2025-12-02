@@ -1,11 +1,28 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../../components/Footer'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Link } from 'react-router-dom'
+import { getHomeBooksAPI } from '../../services/allAPI'
 
 const Home = () => {
+
+  const [homeBook,setHomeBook] = useState([])
+const getHomeBooks = async ()=>{
+  const result = await getHomeBooksAPI()
+  console.log(result.data);
+  if(result.status == 200){
+    setHomeBook(result.data)
+  }
+  
+}
+
+useEffect(()=>{
+  getHomeBooks()
+},[])
+
+
   return (
     <div>
       <Header/>
@@ -33,38 +50,20 @@ const Home = () => {
         <h2>New Arrivals</h2>
         <h4>Explore our latest Collection</h4>
       <div className='grid grid-cols-4 w-full'>
-        <div className='p-3'>
-          <img src="https://blog-cdn.reedsy.com/directories/gallery/248/large_65b0ae90317f7596d6f95bfdd6131398.jpg" alt="" style={{width:'100%', height:'300px'}} />
-          <div className='flex justify-center items-center flex-col '>
-            <p>Author</p>
-            <h3>tite</h3>
-            <p>$price</p>
-          </div>
-        </div>
-         <div className='p-3'>
-          <img src="https://www.designforwriters.com/wp-content/uploads/2017/10/design-for-writers-book-cover-tf-2-a-million-to-one.jpg" alt="" style={{width:'100%', height:'300px'}} />
-          <div className='flex justify-center items-center flex-col '>
-            <p>Author</p>
-            <h3>tite</h3>
-            <p>$price</p>
-          </div>
-        </div>
-         <div className='p-3'>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWPqOXlyaAUUC_KwT7PKLZAyXjfzMipm3pBQ&s" alt="" style={{width:'100%', height:'300px'}} />
-          <div className='flex justify-center items-center flex-col '>
-            <p>Author</p>
-            <h3>tite</h3>
-            <p>$price</p>
-          </div>
-        </div>
-         <div className='p-3'>
-          <img src="https://dryuc24b85zbr.cloudfront.net/tes/resources/6441170/image?width=500&height=500&version=1474643904786" alt="" style={{width:'100%', height:'300px'}} />
-          <div className='flex justify-center items-center flex-col '>
-            <p>Author</p>
-            <h3>tite</h3>
-            <p>$price</p>
-          </div>
-        </div>
+       {homeBook?.length>0 ?
+       homeBook?.map((item)=>(
+            <div className='p-3'>
+                      <img src="" alt="" style={{width:'100%', height:'300px'}} />
+                      <div className='flex justify-center items-center flex-col '>
+                        <p>{item?.author}</p>
+                        <h3>{item?.title}</h3>
+                        <p>${item?.price}</p>
+                      </div>
+                    </div>
+       )) 
+       :
+       <p>loading</p>
+       }
       </div>
 
 
