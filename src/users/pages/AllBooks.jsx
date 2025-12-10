@@ -1,132 +1,157 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import Header from '../components/Header'
 import Footer from '../../components/Footer'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { getAllBooksAPI } from "../../services/allAPI"
+import { Link } from "react-router-dom"
+import { searchKeyContext } from "../../../context/ContextShare1"
 
 const AllBooks = () => {
-  const [status, setStatus] = useState(false)
-  const [allBooks, setAllBooks] = useState([])
-  const [token, setToken] = useState("")
+    const [status, setStatus] = useState(false)
+    const [allBooks, setAllBooks] = useState([])
+    const [token, setToken] = useState("")
+    const [tempAllBooks, setTempAllBooks] = useState([])
+    const {searchKey,setSearchKey}=useContext(searchKeyContext)
+    console.log(searchKey);
+    
 
-  const getAllBooks = async (token) => {
-    const reqHeader = {
-      "Authorization": `Bearer ${token}`
+
+
+    const getAllBooks = async (searchKey,token) => {
+        const reqHeader = {
+            "Authorization": `Bearer ${token}`
+        }
+        const result = await getAllBooksAPI(searchKey,reqHeader)
+        if (result.status == 200) {
+            setAllBooks(result.data)
+            setTempAllBooks(result.data)
+
+        }
     }
-    const result = await getAllBooksAPI(reqHeader)
-    if (result.status == 200) {
-      setAllBooks(result.data)
+
+     const handleFilter=(data)=>{
+
+        console.log(data);
+        if(data=='Allbooks'){
+            setAllBooks(tempAllBooks)
+        }else{
+            setAllBooks(tempAllBooks.filter(item=>item.category.toLowerCase()==data.toLowerCase()))
+        }
+           
     }
-  }
 
-  console.log(allBooks)
+    console.log(allBooks)
 
-  useEffect(() => {
-    if (sessionStorage.getItem("token")) {
-      const tok = sessionStorage.getItem("token")
-      setToken(tok)
-      getAllBooks(tok)
-    }
-  }, [])
+    useEffect(() => {
+        if (sessionStorage.getItem("token")) {
+            const tok = sessionStorage.getItem("token")
+            setToken(tok)
+            getAllBooks(searchKey,tok)
+        }
+    }, [searchKey])
 
-  return (
-    <>
-      <Header />
-      {token ?
-                
+    return (
+        <>
+            <Header />
+            {token ?
+
                 <div className=' flex flex-col justify-center items-center'>
-                <h1 className=' text-black text-2xl'>Collections</h1>
-                <div className=' flex justify-center items-center py-5'>
-                    <input placeholder=' Search Book Name' className=' bg-white placeholder-gray-600 p-2 border rounded me-1' type="text" />
-                    <button className=' text-white bg-blue-600 p-2 rounded border border-blue-600'>Search</button>
-                </div>
+                    <h1 className=' text-black text-2xl'>Collections</h1>
+                    <div className=' flex justify-center items-center py-5'>
+                        <input value={searchKey} onChange={(e)=>setSearchKey(e.target.value)} placeholder=' Search Book Name' className=' bg-white placeholder-gray-600 p-2 border rounded me-1' type="text" />
+                        {/* <button  className=' text-white bg-blue-600 p-2 rounded border border-blue-600'>Search</button> */}
+                    </div>
 
 
-                <div className='md:grid grid-cols-[1fr_4fr] md:p-10 p-5'>
+                    <div className='md:grid grid-cols-[1fr_4fr] md:p-10 p-5'>
 
-                    <div>
-                        <div className='flex justify-center items-center'>
-                            <h1 className=' text-xl'>Filter</h1>
-                            <button onClick={() => setStatus(!status)} className=' md:hidden' ><FontAwesomeIcon className=' text-3xl text-black ms-5' icon={faBars} /></button>
-                        </div>
+                        <div>
+                            <div className='flex justify-center items-center'>
+                                <h1 className=' text-xl'>Filter</h1>
+                                <button onClick={() => setStatus(!status)} className=' md:hidden' ><FontAwesomeIcon className=' text-3xl text-black ms-5' icon={faBars} /></button>
+                            </div>
 
-                        <div className={status ? 'md:block' : 'md:block justify-center items-center hidden'}>
-                            <div className=' flex flex-col justify-center items-center'>
-                                <div className=' mt-3'>
-                                    <input type="radio" name="filter" id="literacy" />
-                                    <label htmlFor="literacy" className=' ms-3'>Literacy</label>
+                            <div className={status ? 'md:block' : 'md:block justify-center items-center hidden'}>
+                                 <div className=' flex flex-col justify-center items-center'>
+                                <div className=' mt-3' onClick={()=>handleFilter('Fiction')}> 
+                                    <input type="radio" name="filter" id="Fiction" />
+                                    <label htmlFor="Fiction" className=' ms-3'>Fiction</label>
                                 </div>
-                                <div className=' mt-3'>
-                                    <input type="radio" name="filter" id="literacy" />
-                                    <label htmlFor="literacy" className=' ms-3'>Literacy</label>
+                                {/* <div className=' mt-3' onClick={()=>handleFilter('Story')}>
+                                    <input type="radio" name="filter" id="Story" />
+                                    <label htmlFor="Story" className=' ms-3'>Story</label>
+                                </div> */}
+                                <div className=' mt-3' onClick={()=>handleFilter('Self Help')}>
+                                    <input type="radio" name="filter" id="Self Help" />
+                                    <label htmlFor="Self Help" className=' ms-3'>Self Help</label>
                                 </div>
-                                <div className=' mt-3'>
-                                    <input type="radio" name="filter" id="literacy" />
-                                    <label htmlFor="literacy" className=' ms-3'>Literacy</label>
+                                <div className=' mt-3' onClick={()=>handleFilter('Fantasy')}>
+                                    <input type="radio" name="filter" id="Fantasy" />
+                                    <label htmlFor="Fantasy" className=' ms-3'>Fantasy</label>
                                 </div>
-                                <div className=' mt-3'>
-                                    <input type="radio" name="filter" id="literacy" />
-                                    <label htmlFor="literacy" className=' ms-3'>Literacy</label>
+                                <div className=' mt-3' onClick={()=>handleFilter('Finance')}>
+                                    <input type="radio" name="filter" id="Finance" />
+                                    <label htmlFor="Finance" className=' ms-3'>Finance</label>
                                 </div>
-                                <div className=' mt-3'>
-                                    <input type="radio" name="filter" id="literacy" />
-                                    <label htmlFor="literacy" className=' ms-3'>Literacy</label>
+                                <div className=' mt-3' onClick={()=>handleFilter('Allbooks')}>
+                                    <input type="radio" name="filter" id="Allbooks" />
+                                    <label htmlFor="Allbooks" className=' ms-3'>Allbooks</label>
                                 </div>
                             </div>
-                        </div>
-
-                    </div>
-                    <div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-5 gap-6">
-
-                            {allBooks.length > 0 ?
-
-                                allBooks.map(book => (
-
-                                    <div className="p-3 flex flex-col items-center text-center">
-                                        <img
-                                            className="w-full max-w-xs rounded-md shadow-md"
-                                            src={book.imgUrl}
-                                            alt="cover page"
-                                        />
-                                        <p className=' my-1'>{book?.author}</p>
-                                        <p className='my-1'>{book?.title}</p>
-                                        <button className=' my-1 border border-blue-900 bg-blue-900 w-full p-2 text-white hover:bg-white hover:text-blue-900'>View More</button>
-                                    </div>
-
-                                ))
-
-                                :
-
-                                <p>loading...</p>
-
-                            }
+                            </div>
 
                         </div>
+                        <div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-5 gap-6">
+
+                                {allBooks.length > 0 ?
+
+                                    allBooks.map(book => (
+
+                                        <div className="p-3 flex flex-col items-center text-center " hidden={book?.status == "pending" ||book?.status == "sold" }>
+                                            <img
+                                                className="w-full max-w-xs rounded-md shadow-md"
+                                                src={book?.imgUrl}
+                                                alt="cover page"
+                                            />
+                                            <p className=' my-1'>{book?.author}</p>
+                                            <p className='my-1'>{book?.title}</p>
+                                            <Link to={`/view-books/${book?._id}`}><button className=' my-1 border border-blue-900 bg-blue-900 w-full p-2 text-white hover:bg-white hover:text-blue-900'>View More</button></Link>
+                                        </div>
+
+                                    ))
+
+                                    :
+
+                                    <p>loading...</p>
+
+                                }
+
+                            </div>
+
+                        </div>
+
 
                     </div>
 
 
                 </div>
 
+                :
 
-            </div>
-
-            :
-
-            <div className=' flex  justify-center flex-col items-center py-10'>
+                <div className=' flex  justify-center flex-col items-center py-10'>
 
 
-                <img className=' w-40' src="https://cdn-icons-gif.flaticon.com/6569/6569164.gif" alt="" />
-                <p>Please <a className=' underline text-blue-600' href='/login'>Login</a> to access Books.</p>
+                    <img className=' w-40' src="https://cdn-icons-gif.flaticon.com/6569/6569164.gif" alt="" />
+                    <p>Please <a className=' underline text-blue-600' href='/login'>Login</a> to access Books.</p>
 
-            </div>
-            
+                </div>
+
             }
-      <Footer />
-    </>
-  )
+            <Footer />
+        </>
+    )
 }
 
 export default AllBooks

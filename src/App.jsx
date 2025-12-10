@@ -14,6 +14,7 @@ import Profile from './users/pages/Profile'
 import AdminHome from './admin/pages/AdminHome'
 import AdminBooks from './admin/pages/AdminBooks'
 import AdminSettings from './admin/pages/AdminSettings'
+import Viewbook from './users/pages/Viewbook'
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
         <Route path='/admin-home' element={loading ? <AdminHome /> : <Preloader />} />
         <Route path='/admin-books' element={<AdminBooks />} />
         <Route path='/admin-settings' element={<AdminSettings />} />
+        <Route path='/view-books/:id' element={<Viewbook />} />
 
 
 

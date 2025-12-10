@@ -1,14 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../../components/Footer'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { getHomeBooksAPI } from '../../services/allAPI'
+import { searchKeyContext } from '../../../context/ContextShare1'
+import { ToastContainer } from 'react-toastify'
 
 const Home = () => {
 
   const [homeBook,setHomeBook] = useState([])
+  const {searchKey,setSearchKey}=useContext(searchKeyContext)
+  const navigate = useNavigate()
+
 const getHomeBooks = async ()=>{
   const result = await getHomeBooksAPI()
   console.log(result.data);
@@ -18,7 +23,22 @@ const getHomeBooks = async ()=>{
   
 }
 
+const searchBook = ()=>{
+  const token = sessionStorage.getItem("token")
+  if(searchKey==""){
+    toast.info("please enter the title of the book")
+  }else if(!token){
+    toast.info("please Login!!")
+  }else if(searchKey && token ){
+    navigate("/allbooks")
+  }else{
+    toast.error("something went wrong")
+  }
+  
+}
+
 useEffect(()=>{
+  setSearchKey("")
   getHomeBooks()
 },[])
 
@@ -35,7 +55,7 @@ useEffect(()=>{
               <h1 className='text-white flex justify-center items-center flex-col'>Wonderful Grits</h1>
               <p>Give your family and friends a book</p>
               <div className='flex mt-4'>
-              <input type="text" placeholder='Search' className='p-2 bg-white rounded-xl' /><FontAwesomeIcon icon={faMagnifyingGlass} className='text-blue-800' style={{marginTop:'11px',marginLeft:'-31px'}} />
+              <input onChange={(e)=>setSearchKey(e.target.value)} type="text" placeholder='Search Book Title' className='p-2 text-black bg-white rounded-xl' /><FontAwesomeIcon icon={faMagnifyingGlass} className='text-blue-800' style={{marginTop:'11px',marginLeft:'-31px'}} onClick={searchBook} />
             </div>
             </div>
             
@@ -97,6 +117,7 @@ useEffect(()=>{
         <p className='mt-3'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, aperiam eius facere tempora libero vel perferendis magni! Ab ipsam possimus assumenda ipsum nisi. Ducimus aspernatur sequi facilis, ut quia iure.</p>
       </div>
       </section>
+      <ToastContainer/>
       <Footer/>
       </div>
   )

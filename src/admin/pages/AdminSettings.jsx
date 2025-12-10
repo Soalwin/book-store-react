@@ -1,11 +1,82 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import AdminHeader from '../component/AdminHeader'
 import Footer from '../../components/Footer'
 import AdminSidebar from '../component/AdminSidebar'
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { adminProfileUpdateAPI } from '../../services/allAPI'
 
 const AdminSettings = () => {
+
+  const [adminDetails,setAdminDetails] = useState({
+    username:"",
+    password:"",
+    cpassword:"",
+    profile:""
+  })
+
+  const [preview,setPreview] = useState("")
+  const [ token,setToken] = useState('')
+
+  
+
+  console.log(adminDetails);
+  
+  const handleFileAdd = (e)=>{
+    const event = e.target.files[0]
+    setAdminDetails({...adminDetails,profile:event})
+    console.log(adminDetails);
+
+    if(event != ""){
+      const url = URL.createObjectURL(event)
+      setPreview(url)
+    }
+    
+  }
+  console.log(preview);
+
+  const handleReset = ()=>{
+    setAdminDetails({
+       username:"",
+    password:"",
+    cpassword:"",
+    profile:""
+    })
+    setPreview("")
+  }
+
+  const handleUpdate= async ()=>{
+    const {username,password,cpassword,profile}= adminDetails
+    console.log(username,password,cpassword,profile);
+
+    if(!username || !password || !cpassword || !profile){
+      alert("plaese fill all fields")
+    }else{
+       const reqHeader = {
+          "Authorization": `Bearer ${token}`
+        }
+        console.log(reqHeader);
+        
+        const reqBody = new FormData() 
+      
+        for(let key in adminDetails){
+          
+            reqBody.append(key, adminDetails[key])
+         
+        }
+        const result = await adminProfileUpdateAPI(reqBody,reqHeader)
+      
+        console.log(result);
+    }
+    
+  }
+  
+useEffect(()=>{
+if(sessionStorage.getItem("token")){}
+  const token = sessionStorage.getItem("token")
+  setToken(token)
+},[])
+
   return (
     <>
     <AdminHeader/>
@@ -22,18 +93,20 @@ const AdminSettings = () => {
 
                 </div>
                 <div className='bg-blue-200 ms-10 mt-5 p-7 rounded'>
-                    <div className='flex justify-center items-center'><img src="https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3407.jpg?semt=ais_hybrid&w=740&q=80" alt=""  style={{height:'150px', width:'150px'}}/><FontAwesomeIcon icon={faPenToSquare} />
+                    <div className='flex justify-center items-center'>
+                      <input type="file" id="adminProfileFile" style={{display:"none"}} onChange={(e)=>handleFileAdd(e)}/>
+                     <label htmlFor='adminProfileFile'> <img src={preview?preview:"https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3407.jpg?semt=ais_hybrid&w=740&q=80"} alt=""  style={{height:'150px', width:'150px'}}/></label><FontAwesomeIcon icon={faPenToSquare} />
                     
                     </div>
                   <div className='flex flex-col mt-10 gap-2'>
-                        <input className='bg-white rounded border ms-2 h-11' type="text" placeholder='Username' />
-                        <input className='bg-white rounded border ms-2 h-11' type="text" placeholder='Password' />
-                        <input className='bg-white rounded border ms-2 h-11' type="text" placeholder='Confirm Password' />   
+                        <input value={adminDetails.username} onChange={(e)=>setAdminDetails({...adminDetails,username:e.target.value})} className='bg-white rounded border ms-2 h-11' type="text" placeholder='Username' />
+                        <input  value={adminDetails.password} onChange={(e)=>setAdminDetails({...adminDetails,password:e.target.value})} className='bg-white rounded border ms-2 h-11' type="text" placeholder='Password' />
+                        <input  value={adminDetails.cpassword} onChange={(e)=>setAdminDetails({...adminDetails,cpassword:e.target.value})} className='bg-white rounded border ms-2 h-11' type="text" placeholder='Confirm Password' />   
                   </div>
 
                   <div className='flex flex-row mt-10 gap-2'>
-                    <button className='w-full p-2 bg-red-700 text-white'>Reset</button>
-                    <button className='w-full p-2 bg-green-700 text-white'>Update</button>
+                    <button onClick={()=>{handleReset()}} className='w-full p-2 bg-red-700 text-white'>Reset</button>
+                    <button onClick={()=>handleUpdate()} className='w-full p-2 bg-green-700 text-white'>Update</button>
                   </div>
 
 
